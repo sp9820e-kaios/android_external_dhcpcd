@@ -319,6 +319,17 @@ send_message(struct interface *iface, int type,
 		syslog(LOG_DEBUG, "%s: sending %s with xid 0x%x",
 		    iface->name, get_dhcp_op(type), state->xid);
 	else {
+/*junbinwang modify for cr291992. 20140402*/
+/*add these code to fasten the retransmission rate.@477598.*/
+#ifdef DHCP_USE_NEW_SEND_MSG_TIME
+		if (state->interval == 0)
+			state->interval = 2;
+		else {
+			state->interval *= 2;
+			if (state->interval > 4)
+				state->interval = 4;
+		}
+#else
 		if (state->interval == 0)
 			state->interval = 4;
 		else {
@@ -326,8 +337,10 @@ send_message(struct interface *iface, int type,
 			if (state->interval > 64)
 				state->interval = 64;
 		}
+#endif
 		tv.tv_sec = state->interval + DHCP_RAND_MIN;
 		tv.tv_usec = arc4random() % (DHCP_RAND_MAX_U - DHCP_RAND_MIN_U);
+
 		syslog(LOG_DEBUG,
 		    "%s: sending %s (xid 0x%x), next in %0.2f seconds",
 		    iface->name, get_dhcp_op(type), state->xid,

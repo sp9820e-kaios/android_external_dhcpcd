@@ -34,6 +34,9 @@
 #include "config.h"
 #include "defs.h"
 
+/*junbinwang add 20140402*/
+#define DHCP_USE_NEW_SEND_MSG_TIME
+
 #define UNCONST(a)		((void *)(unsigned long)(const void *)(a))
 
 #define timeval_to_double(tv) ((tv)->tv_sec * 1.0 + (tv)->tv_usec * 1.0e-6)
